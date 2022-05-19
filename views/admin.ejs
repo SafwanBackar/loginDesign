@@ -23,10 +23,12 @@
 <table>
     <tr>
       <th>Users</th>
+      <th>Edit</th>
     </tr>
     <% allUsers.forEach((users) =>{ %>
     <tr>
         <td><%= users.username %></td>
+        <td><button><a style="text-decoration: none;" href="/edit/<%= users._id %>">Update</a></button></td>
     </tr>
     <% }) %>
   </table>

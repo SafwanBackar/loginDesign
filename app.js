@@ -56,7 +56,7 @@ app.post('/login', (req,res) =>{
                     res.redirect('/admin')
                 }else(
                     res.send('Wrong Password')
-                )
+                    )
             })
         }else{
             res.json('No user found');
@@ -72,6 +72,11 @@ app.get('/admin', (req,res) =>{
             res.render('admin', {allUsers: allUsers})
         }
     })
+})
+
+// Edit 
+app.get('/edit/:id', (req,res) =>{
+    res.render('edit')
 })
 
 
