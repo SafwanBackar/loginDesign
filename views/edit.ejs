@@ -1,7 +1,7 @@
 <h1>Edit your username</h1>
 
 
-<form action="/edit/<%= foundUser._id %>?_methdo=PUT" method="post">
+<form action="/edit/<%= foundUser._id %>?_method=PUT" method="POST">
     <input type="text" name="username" id="" required value="<%= foundUser.username %>">
     <button type="submit">Submit</button>
 </form>

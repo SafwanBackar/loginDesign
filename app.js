@@ -6,6 +6,7 @@ const User = require('./models/User')
 const { exists } = require('./models/User');
 const bcrypt = require('bcrypt');
 const res = require('express/lib/response');
+const methodOverride = require('method-override');
 
 
 mongoose.connect('mongodb://localhost:27017/loginTask')
@@ -16,6 +17,7 @@ db.once("open", () => {
     console.log('database connnected');
 })
 
+app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({ extended: true }))
 app.set('view engine', 'ejs')
 
@@ -82,7 +84,7 @@ app.get('/edit/:id', (req,res) =>{
 })
 
 app.put('/edit/:id', (req,res) => {
-    User.findByIdAndUpdate(req.params.id, (err, editUser) =>{
+    User.findByIdAndUpdate(req.params.id, {username: req.body.username}, (err, editUser) =>{
         if(err){
             res.send('There was an error in updating')
             console.log(err)
