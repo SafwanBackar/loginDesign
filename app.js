@@ -76,7 +76,20 @@ app.get('/admin', (req,res) =>{
 
 // Edit 
 app.get('/edit/:id', (req,res) =>{
-    res.render('edit')
+    User.findById(req.params.id, (err,foundUser) =>{
+        res.render('edit', {foundUser : foundUser})
+    } )
+})
+
+app.put('/edit/:id', (req,res) => {
+    User.findByIdAndUpdate(req.params.id, (err, editUser) =>{
+        if(err){
+            res.send('There was an error in updating')
+            console.log(err)
+        }else{
+            res.redirect('/admin')
+        }
+    } )
 })
 
 
