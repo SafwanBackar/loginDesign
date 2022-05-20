@@ -24,11 +24,15 @@
     <tr>
       <th>Users</th>
       <th>Edit</th>
+      <th>Delete</th>
     </tr>
     <% allUsers.forEach((users) =>{ %>
     <tr>
         <td><%= users.username %></td>
         <td><button><a style="text-decoration: none;" href="/edit/<%= users._id %>">Update</a></button></td>
+        <form action="/<%= users._id %>?_method=DELETE" method="post">
+          <td><button type="submit">Delete</button></td> 
+        </form>
     </tr>
     <% }) %>
 </table>

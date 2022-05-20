@@ -94,6 +94,18 @@ app.put('/edit/:id', (req,res) => {
     } )
 })
 
+// delete
+
+app.delete('/:id', (req,res) =>{
+    User.findByIdAndDelete(req.params.id, (err,deleteUser) =>{
+        if(err){
+            console.log(err);
+        }else{
+            res.redirect('/login')
+        }
+    })
+})
+
 
 app.listen('5000', () => {
     console.log('Server started');
