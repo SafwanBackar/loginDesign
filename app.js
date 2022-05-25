@@ -7,7 +7,13 @@ const { exists } = require('./models/User');
 const bcrypt = require('bcrypt');
 const res = require('express/lib/response');
 const methodOverride = require('method-override');
-
+const req = require('express/lib/request');
+const cookieParser = require('cookie-parser');
+const sessions = require('express-session');
+const oneDay = 1000 * 60 * 60 * 24;
+var myusername = 'make'
+var mypassword = 'make'
+var session;
 
 mongoose.connect('mongodb://localhost:27017/loginTask')
 
@@ -17,12 +23,29 @@ db.once("open", () => {
     console.log('database connnected');
 })
 
+app.use(sessions({
+    secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
+    saveUninitialized:true,
+    cookie: { maxAge: oneDay },
+    resave: false
+}));
+
+
 app.use(methodOverride('_method'));
+app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.static(__dirname));
+app.use(cookieParser())
 app.set('view engine', 'ejs')
 
+
 app.get('/', (req,res)=>{
-    res.render('index')
+    session = req.session;
+    if(session.userid){
+        res.redirect('/admin')
+    }else{
+        res.render('index')
+    }
 })
 app.get('/register', (req,res) =>{
     res.render('register')
@@ -45,8 +68,14 @@ app.post('/register', async (req,res) =>{
 })
 
 app.get('/login', (req,res)=>{
-    res.render('login')
+    session = req.session;
+    if(session.userid){
+        res.redirect('/admin')
+    }else{
+        res.render('login')
+    }
 })
+
 
 app.post('/login', (req,res) =>{
     const password = req.body.password
@@ -55,10 +84,13 @@ app.post('/login', (req,res) =>{
         if(data){
             bcrypt.compare(password, data.password).then((value) =>{
                 if(value){
+                    session= req.session;
+                    session.userid=req.body.username;
+                    console.log(req.session);
                     res.redirect('/admin')
-                }else(
+                }else{
                     res.send('Wrong Password')
-                    )
+                     }
             })
         }else{
             res.json('No user found');
@@ -67,13 +99,19 @@ app.post('/login', (req,res) =>{
   })
 
 app.get('/admin', (req,res) =>{
-    User.find({}, (err, allUsers)=>{
-        if(err){
-            console.log(err);
-        }else{
-            res.render('admin', {allUsers: allUsers})
-        }
-    })
+    session = req.session;
+    if(session.userid){
+        User.find({}, (err, allUsers)=>{
+            if(err){
+                console.log(err);
+            }else{
+                res.render('admin', {allUsers: allUsers})
+            }
+        })
+    }else{
+        res.send("Login first")
+    }
+    
 })
 
 // Edit 
@@ -106,6 +144,22 @@ app.delete('/:id', (req,res) =>{
     })
 })
 
+
+// logout
+app.get('/logout', (req,res) =>{
+    req.session.destroy();
+    res.redirect('/login')
+    console.
+    log();
+})
+
+var middleware = {}
+middleware.isAuthIn = function isAuthIn (req,res){
+    if(req.session.auth){
+        res.redirect('/admin')
+    }
+    res.render('login')
+}
 
 app.listen('5000', () => {
     console.log('Server started');
