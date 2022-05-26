@@ -38,6 +38,16 @@ app.use(express.static(__dirname));
 app.use(cookieParser())
 app.set('view engine', 'ejs')
 
+let middleware = {}
+middleware.isAuthIn = function isAuthIn (req, res, next){
+    session = req.session
+    if(session.userid){
+        res.redirect('/admin')
+        return;
+    }
+    next();
+}
+
 
 app.get('/', (req,res)=>{
     session = req.session;
@@ -67,13 +77,8 @@ app.post('/register', async (req,res) =>{
     })
 })
 
-app.get('/login', (req,res)=>{
-    session = req.session;
-    if(session.userid){
-        res.redirect('/admin')
-    }else{
-        res.render('login')
-    }
+app.get('/login', middleware.isAuthIn ,(req,res)=>{
+    res.render('login')
 })
 
 
@@ -153,13 +158,6 @@ app.get('/logout', (req,res) =>{
     log();
 })
 
-var middleware = {}
-middleware.isAuthIn = function isAuthIn (req,res){
-    if(req.session.auth){
-        res.redirect('/admin')
-    }
-    res.render('login')
-}
 
 app.listen('5000', () => {
     console.log('Server started');
